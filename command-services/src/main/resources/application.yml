@@ -32,6 +32,10 @@ events:
     routing-key: images-deadletter-key
 
 images:
+  resources:
+    protocole: http
+    port: 8083
+    url: ${images.resources.protocole}://%s:${images.resources.port}/images/resources/load/%s
   files:
     upload:
       #directory: /tmp/upload/

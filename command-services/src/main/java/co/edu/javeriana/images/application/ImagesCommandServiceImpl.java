@@ -53,7 +53,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
             response.setStatus(status);
 
             if (!status.equalsIgnoreCase(Status.CREATED.name())) {
-                response.setDescription(String.format("The image with id: {%s} has an error", data.getImageName()));
+                response.setDescription(String.format("The image with id: {%s} has an error", data.getImageId()));
                 return CompletableFuture.completedFuture(response);
             }
 
@@ -66,7 +66,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
 
             data.setStatus(Status.CREATED.name());
             this.template.convertAndSend(imageExchange, imageRoutingKey, data);
-            response.setDescription(String.format("The image with id: {%s} has been created", data.getImageName()));
+            response.setDescription(String.format("The image with id: {%s} has been created", data.getImageId()));
 
             return CompletableFuture.completedFuture(response);
         } catch (Exception e) {
@@ -84,11 +84,11 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
             response.setStatus(status);
 
             if (!status.equalsIgnoreCase(Status.UPDATED.name())) {
-                response.setDescription(String.format("The image with id: {%s} has an error", data.getImageName()));
+                response.setDescription(String.format("The image with id: {%s} has an error", data.getImageId()));
                 return CompletableFuture.completedFuture(response);
             }
 
-            response.setDescription(String.format("The image with id: {%s} has been updated", data.getImageName()));
+            response.setDescription(String.format("The image with id: {%s} has been updated", data.getImageId()));
             data.setStatus(Status.UPDATED.name());
             this.template.convertAndSend(imageExchange, imageRoutingKey, data);
 
@@ -108,11 +108,11 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
             response.setStatus(status);
 
             if (!status.equalsIgnoreCase(Status.DELETED.name())) {
-                response.setDescription(String.format("The image with id: {%s} has an error", data.getImageName()));
+                response.setDescription(String.format("The image with id: {%s} has an error", data.getImageId()));
                 return CompletableFuture.completedFuture(response);
             }
 
-            response.setDescription(String.format("The image with id: {%s} has been deleted", data.getImageName()));
+            response.setDescription(String.format("The image with id: {%s} has been deleted", data.getImageId()));
             data.setStatus(Status.DELETED.name());
             this.template.convertAndSend(imageExchange, imageRoutingKey, data);
 
@@ -126,7 +126,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
 
     private boolean upload(Image data, MultipartFile mfile) {
         try {
-            File file = new File(String.format(this.TPL_TEMPLATE_FILE_PATH, this.FILES_PATH, data.getImageName()));
+            File file = new File(String.format(this.TPL_TEMPLATE_FILE_PATH, this.FILES_PATH, data.getImageId()));
 
             if (!file.exists()) file.createNewFile();
 

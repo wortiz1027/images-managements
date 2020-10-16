@@ -8,12 +8,15 @@ import co.edu.javeriana.images.dto.Response;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -22,6 +25,9 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class ImageAddCommandController {
 
+    @Value("${images.resources.url}")
+    private String urlTemplate;
+
     private final ImagesCommandService service;
 
     @PostMapping(value = "/images",
@@ -29,7 +35,7 @@ public class ImageAddCommandController {
                  consumes = { MediaType.APPLICATION_JSON_VALUE,
                               MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<CompletableFuture<Response>> handle(@RequestPart(value = "data", required = true) Request data,
-                                                              @RequestPart(value = "file", required = true) MultipartFile file) throws ExecutionException, InterruptedException {
+                                                              @RequestPart(value = "file", required = true) MultipartFile file) throws ExecutionException, InterruptedException, UnknownHostException {
 
         if (data == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
@@ -37,9 +43,9 @@ public class ImageAddCommandController {
         image.setImageId(data.getImageId());
         String name = file.getOriginalFilename();
         image.setImageName(String.format("%s_%s", data.getImageId(), name.replace(" ", "_")));
-        //image.setImageName(file.getOriginalFilename());
         image.setImageType(FilenameUtils.getExtension(file.getOriginalFilename()));
         image.setImageSize((int)file.getSize());
+        image.setImageUrl(String.format(urlTemplate, InetAddress.getLocalHost().getHostName(), String.format("%s_%s", data.getImageId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
 
         CompletableFuture<Response> rs = service.createImage(image, file);
 
