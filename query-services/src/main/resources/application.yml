@@ -1,0 +1,27 @@
+server:
+  port: 8084
+  servlet:
+    context-path: /images
+
+spring:
+  rabbitmq:
+    host: "${RABBITMQ_HOST:localhost}"
+    port: 5672
+    username: "${RABBITMQ_USER:pica}"
+    password: "${RABBITMQ_PASS:Pica2020++}"
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_IMAGES_QUERY_HOST:localhost}:3303/imagesquerydb
+    username: image
+    password: image2020++
+
+events:
+  amqp:
+    queue: images-queue-command
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.springframework.data: DEBUG
+    org.springframework.amqp: DEBUG
+    co.edu.javeriana.images: DEBUG

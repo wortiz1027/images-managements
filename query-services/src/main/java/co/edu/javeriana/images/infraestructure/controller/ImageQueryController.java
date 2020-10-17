@@ -1,0 +1,51 @@
+package co.edu.javeriana.images.infraestructure.controller;
+
+import co.edu.javeriana.images.application.ImageQueryService;
+import co.edu.javeriana.images.domain.Status;
+import co.edu.javeriana.images.dtos.Response;
+import co.edu.javeriana.images.dtos.ResponseImage;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.UnknownHostException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
+@RestController
+@RequestMapping("/api/v1")
+@RequiredArgsConstructor
+public class ImageQueryController {
+
+    private final ImageQueryService service;
+
+    @GetMapping(value = "/images")
+    public ResponseEntity<CompletableFuture<Response>> all() throws ExecutionException, InterruptedException, UnknownHostException {
+        CompletableFuture<Response> rs = service.getAllImage();
+
+        if (rs.get().getStatus().getCode().equalsIgnoreCase(Status.SUCCESS.name()))
+            return new ResponseEntity<>(rs, HttpStatus.OK);
+
+        if (rs.get().getStatus().getCode().equalsIgnoreCase(Status.EMPTY.name()))
+            return new ResponseEntity<>(rs, HttpStatus.NOT_FOUND);
+
+        if (rs.get().getStatus().getCode().equalsIgnoreCase(Status.ERROR.name()))
+            return new ResponseEntity<>(rs, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return new ResponseEntity<>(rs, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping(value = "/images/{id}")
+    public ResponseEntity<CompletableFuture<ResponseImage>> detail(@PathVariable(required = true) String id) throws ExecutionException, InterruptedException, UnknownHostException {
+        CompletableFuture<ResponseImage> rs = service.getImageById(id);
+
+        if (rs.get().getStatus().getCode().equalsIgnoreCase(Status.EMPTY.name()))
+            return new ResponseEntity<>(rs, HttpStatus.NOT_FOUND);
+
+        if (rs.get().getStatus().getCode().equalsIgnoreCase(Status.ERROR.name()))
+            return new ResponseEntity<>(rs, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+}

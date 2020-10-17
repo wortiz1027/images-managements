@@ -126,7 +126,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
 
     private boolean upload(Image data, MultipartFile mfile) {
         try {
-            File file = new File(String.format(this.TPL_TEMPLATE_FILE_PATH, this.FILES_PATH, data.getImageId()));
+            File file = new File(String.format(this.TPL_TEMPLATE_FILE_PATH, this.FILES_PATH, data.getImageName()));
 
             if (!file.exists()) file.createNewFile();
 
