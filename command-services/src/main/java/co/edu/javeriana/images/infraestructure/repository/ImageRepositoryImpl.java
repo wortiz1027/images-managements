@@ -3,16 +3,22 @@ package co.edu.javeriana.images.infraestructure.repository;
 import co.edu.javeriana.images.domain.Image;
 import co.edu.javeriana.images.domain.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
 @RequiredArgsConstructor
 public class ImageRepositoryImpl implements ImageRepository<Image> {
+
+    @Value("${images.files.upload.directory}")
+    private String FILES_PATH;
 
     private final JdbcTemplate template;
 
@@ -65,7 +71,16 @@ public class ImageRepositoryImpl implements ImageRepository<Image> {
     @Override
     public CompletableFuture<String> update(Image data) {
         try {
-            if (findById(data.getImageId()).isPresent()) return CompletableFuture.completedFuture(Status.EXIST.name());
+            Optional<Image> image = findById(data.getImageId());
+
+            if (!image.isPresent()) return CompletableFuture.completedFuture(Status.NO_EXIST.name());
+
+            File dir = new File(FILES_PATH);
+            File[] matches = dir.listFiles((dir1, name) -> name.equalsIgnoreCase(image.get().getImageName()));
+
+            if (matches[0].exists()) matches[0].renameTo(new File(String.format("%s%s", FILES_PATH, data.getImageName())));
+
+            data.setImageUrl(image.get().getImageUrl().replace(image.get().getImageName(), data.getImageName()));
 
             String sql = "UPDATE IMAGE SET " +
                                     "IMAGE_NAME = ?, " +
@@ -83,6 +98,7 @@ public class ImageRepositoryImpl implements ImageRepository<Image> {
 
             return CompletableFuture.completedFuture(Status.UPDATED.name());
         } catch(Exception e) {
+            e.printStackTrace();
             return CompletableFuture.completedFuture(Status.ERROR.name());
         }
     }

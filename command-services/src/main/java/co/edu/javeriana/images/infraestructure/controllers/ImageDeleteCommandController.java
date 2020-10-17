@@ -22,7 +22,7 @@ public class ImageDeleteCommandController {
 
     private final ImagesCommandService service;
 
-    @DeleteMapping("/products")
+    @DeleteMapping("/images")
     public ResponseEntity<CompletableFuture<Response>> handle(@RequestBody Image data) throws ExecutionException, InterruptedException {
         if (data == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 

@@ -30,10 +30,7 @@ public class ImageAddCommandController {
 
     private final ImagesCommandService service;
 
-    @PostMapping(value = "/images",
-                 produces = MediaType.APPLICATION_JSON_VALUE,
-                 consumes = { MediaType.APPLICATION_JSON_VALUE,
-                              MediaType.MULTIPART_FORM_DATA_VALUE })
+    @PostMapping("/images")
     public ResponseEntity<CompletableFuture<Response>> handle(@RequestPart(value = "data", required = true) Request data,
                                                               @RequestPart(value = "file", required = true) MultipartFile file) throws ExecutionException, InterruptedException, UnknownHostException {
 

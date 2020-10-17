@@ -29,11 +29,11 @@ public class EventHandler {
             this.repository.create(data);
         }
 
-        if (data.getStatus().equalsIgnoreCase(Status.UPDATED.name()) && !image.isPresent()) {
+        if (data.getStatus().equalsIgnoreCase(Status.UPDATED.name()) && image.isPresent()) {
             this.repository.update(data);
         }
 
-        if (data.getStatus().equalsIgnoreCase(Status.DELETED.name()) && !image.isPresent()) {
+        if (data.getStatus().equalsIgnoreCase(Status.DELETED.name()) && image.isPresent()) {
             this.repository.delete(data);
         }
 

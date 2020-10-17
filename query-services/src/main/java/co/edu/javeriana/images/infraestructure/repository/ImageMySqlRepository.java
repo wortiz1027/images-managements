@@ -3,17 +3,20 @@ package co.edu.javeriana.images.infraestructure.repository;
 import co.edu.javeriana.images.domain.Image;
 import co.edu.javeriana.images.domain.Status;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class ImageMySqlRepository implements Repository<Image> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ImageMySqlRepository.class);
 
     private final JdbcTemplate template;
 
@@ -44,6 +47,22 @@ public class ImageMySqlRepository implements Repository<Image> {
                             ))
             );
         } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<List<Image>> findByIds(String ids) {
+        try{
+            String sql = "SELECT * FROM IMAGE WHERE IMAGE_ID IN (?)";
+
+            List<Image> images = this.template.query(sql, new String[]{ids}, new ImageRowMapper());
+
+            LOG.info("[IMAGES]: [{}]", images);
+
+            return Optional.of(images);
+        } catch (Exception e) {
+            e.printStackTrace();
             return Optional.empty();
         }
     }

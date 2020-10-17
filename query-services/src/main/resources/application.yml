@@ -18,6 +18,10 @@ spring:
 events:
   amqp:
     queue: images-queue-command
+  rpc:
+    exchange: images-exchange-events
+    queue: image-queue-query
+    routing-key: images-events-key
 
 logging:
   level:
