@@ -3,7 +3,7 @@
 # +-----------------------------------------------------
 spring:
   application:
-    name: images-query-service
+    name: images-query-services
   cloud:
     config:
       uri:  ${CONFIG_SERVER:http://localhost:9090}  #where the config-service is running
