@@ -10,6 +10,8 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,6 +68,15 @@ public class EventsConfiguration {
     @Bean
     Binding DLQbinding(Queue dlq, DirectExchange deadLetterExchange) {
         return BindingBuilder.bind(dlq).to(deadLetterExchange).with(deadRoutingKey);
+    }
+
+    @Bean
+    MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory ) {
+        SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
+        simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
+        simpleMessageListenerContainer.setQueues(queue());
+
+        return simpleMessageListenerContainer;
     }
 
     @Bean

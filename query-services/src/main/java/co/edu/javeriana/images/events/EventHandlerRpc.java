@@ -21,6 +21,7 @@ public class EventHandlerRpc {
 
     @RabbitListener(queues = "${events.rpc.queue}", concurrency = "10")
     public Response receive(Request data) throws ExecutionException, InterruptedException {
+        LOG.debug("RECEIVE: {}", data);
         return service.getImageByIds(data.getIds()).get();
     }
 

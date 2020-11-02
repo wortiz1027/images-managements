@@ -54,9 +54,29 @@ public class ImageMySqlRepository implements Repository<Image> {
     @Override
     public Optional<List<Image>> findByIds(String ids) {
         try{
-            String sql = "SELECT * FROM IMAGE WHERE IMAGE_ID IN (?)";
 
-            List<Image> images = this.template.query(sql, new String[]{ids}, new ImageRowMapper());
+            List<String> idents = Arrays.asList(ids.split(","));
+            List<Image> images = new ArrayList<>();
+
+            for (String id : idents) {
+                String sql = "SELECT * FROM IMAGE WHERE IMAGE_ID = ?";
+
+                //List<Image> images = this.template.query(sql, new String[]{id}, new ImageRowMapper());
+
+                Image image = template.queryForObject(sql,
+                        new Object[]{id},
+                        (rs, rowNum) ->
+                                new Image(rs.getString("IMAGE_ID"),
+                                        rs.getString("IMAGE_NAME"),
+                                        rs.getString("IMAGE_TYPE"),
+                                        rs.getInt("IMAGE_SIZE"),
+                                        rs.getString("IMAGE_URL"),
+                                        ""
+                                )
+                );
+
+                images.add(image);
+            }
 
             LOG.info("[IMAGES]: [{}]", images);
 
