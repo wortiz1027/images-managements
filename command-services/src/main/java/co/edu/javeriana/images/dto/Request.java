@@ -3,8 +3,9 @@ package co.edu.javeriana.images.dto;
 import lombok.Data;
 
 @Data
-public class Request {
+public class Request implements java.io.Serializable {
 
-    private String imageId;
+    private Metadata metadata;
+    private String  image;
 
 }

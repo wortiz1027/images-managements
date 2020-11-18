@@ -10,13 +10,11 @@ import org.apache.commons.io.FilenameUtils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -30,7 +28,7 @@ public class ImageAddCommandController {
 
     private final ImagesCommandService service;
 
-    @PostMapping("/images")
+    /*@PostMapping("/images")
     public ResponseEntity<CompletableFuture<Response>> handle(@RequestPart(value = "data", required = true) Request data,
                                                               @RequestPart(value = "file", required = true) MultipartFile file) throws ExecutionException, InterruptedException, UnknownHostException {
 
@@ -45,6 +43,30 @@ public class ImageAddCommandController {
         image.setImageUrl(String.format(urlTemplate, InetAddress.getLocalHost().getHostName(), String.format("%s_%s", data.getImageId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
 
         CompletableFuture<Response> rs = service.createImage(image, file);
+
+        if (rs.get().getStatus().equalsIgnoreCase(Status.CREATED.name()))
+            return new ResponseEntity<>(rs, HttpStatus.CREATED);
+
+        if (rs.get().getStatus().equalsIgnoreCase(Status.ERROR.name()))
+            return new ResponseEntity<>(rs, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return new ResponseEntity<>(rs, HttpStatus.CONFLICT);
+    }*/
+
+    @PostMapping("/images")
+    public ResponseEntity<CompletableFuture<Response>> handle(@RequestBody Request data) throws ExecutionException, InterruptedException, IOException {
+
+        if (data == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        Image image = new Image();
+        image.setImageId(data.getMetadata().getId());
+        String name = data.getMetadata().getName();
+        image.setImageName(String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")));
+        image.setImageType(data.getMetadata().getType());
+        image.setImageSize(data.getMetadata().getSize());
+        image.setImageUrl(String.format(urlTemplate, InetAddress.getLocalHost().getHostName(), String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
+
+        CompletableFuture<Response> rs = service.createImage(image, data.getImage());
 
         if (rs.get().getStatus().equalsIgnoreCase(Status.CREATED.name()))
             return new ResponseEntity<>(rs, HttpStatus.CREATED);

@@ -5,6 +5,7 @@ import co.edu.javeriana.images.domain.Status;
 import co.edu.javeriana.images.dto.Response;
 import co.edu.javeriana.images.infraestructure.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,7 +31,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
 
     private Path location;
 
-    private String TPL_TEMPLATE_FILE_PATH = "%s%s";
+    private String TPL_TEMPLATE_FILE_PATH = "%s%s.%s";
 
     @Value("${images.files.upload.directory}")
     private String FILES_PATH;
@@ -46,7 +46,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
     private final AmqpTemplate template;
 
     @Override
-    public CompletableFuture<Response> createImage(Image data, MultipartFile file) {
+    public CompletableFuture<Response> createImage(Image data, String file) {
         Response response = new Response();
         try {
             String status = this.repository.create(data).get();
@@ -61,7 +61,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
 
             if (!isUploaded) {
                 response.setStatus(Status.ERROR.name());
-                response.setDescription(String.format("Exception uploading image has been release: {%s}", file.getInputStream()));
+                response.setDescription(String.format("Exception uploading image has been release: {%s}", data.getImageName()));
             }
 
             data.setStatus(Status.CREATED.name());
@@ -124,7 +124,7 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
         }
     }
 
-    private boolean upload(Image data, MultipartFile mfile) {
+    /*private boolean upload(Image data, MultipartFile mfile) {
         try {
             File file = new File(String.format(this.TPL_TEMPLATE_FILE_PATH, this.FILES_PATH, data.getImageName()));
 
@@ -132,6 +132,25 @@ public class ImagesCommandServiceImpl implements ImagesCommandService {
 
             try ( FileOutputStream fos = new FileOutputStream(file) ) {
                 fos.write(mfile.getBytes());
+            }
+            return Boolean.TRUE;
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            LOG.error("Error convert multipartfile to file: ", ioe);
+            return Boolean.FALSE;
+        }
+    }*/
+
+    private boolean upload(Image data, String img) {
+        try {
+            byte[] image = Base64.decodeBase64(img);
+
+            File file = new File(String.format(this.TPL_TEMPLATE_FILE_PATH, this.FILES_PATH, data.getImageName(), data.getImageType()));
+
+            if (!file.exists()) file.createNewFile();
+
+            try ( FileOutputStream fos = new FileOutputStream(file) ) {
+                fos.write(image);
             }
             return Boolean.TRUE;
         } catch (IOException ioe) {
