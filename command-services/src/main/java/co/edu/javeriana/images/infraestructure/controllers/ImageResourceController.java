@@ -1,6 +1,11 @@
 package co.edu.javeriana.images.infraestructure.controllers;
 
 import co.edu.javeriana.images.application.ImagesCommandService;
+import co.edu.javeriana.images.dto.Response;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +25,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/resources")
 @RequiredArgsConstructor
+@Api(value="Gestion de imagenes como recursos que han sido registradas en toures balon")
 public class ImageResourceController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImageResourceController.class);
@@ -31,6 +37,12 @@ public class ImageResourceController {
 
     private final ImagesCommandService service;
 
+    @ApiOperation(value = "Upload de imagenes en el sistema", response = Response.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Upload exitosa de la imagen"),
+            @ApiResponse(code = 404, message = "Error no se encontro informacion de la imagen"),
+            @ApiResponse(code = 500, message = "Error interno en el servidor, contacte y reporte con el administrador")
+    })
     @GetMapping("/load/{fileName}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = null;
