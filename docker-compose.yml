@@ -8,22 +8,22 @@
 
 version: '3.7'
 services:
-  products-command-services:
-    image: products-command-services:latest
-    container_name: products-command-services
-    hostname: products-command-services
+  images-command-services:
+    image: wortiz1027/images-command-services:latest
+    container_name: images-command-services
+    hostname: images-command-services
     restart: always
     ports:
-      - 8081:8081
+      - 8083:8083
     networks:
       - ntw_backend
-  products-query-services:
-    image: products-query-services:latest
-    container_name: products-query-services
-    hostname: products-query-services
+  images-query-services:
+    image: wortiz1027/images-query-services:latest
+    container_name: images-query-services
+    hostname: images-query-services
     restart: always
     ports:
-      - 8082:8082
+      - 8084:8084
     networks:
       - ntw_backend
 networks:
