@@ -15,6 +15,12 @@ services:
     restart: always
     ports:
       - 8083:8083
+    environment:  
+      - CONFIG_SERVER=http://10.39.1.85:9090
+      - EUREKA_SERVER=http://10.39.1.85:9091/eureka
+      - EUREKA_HOST=10.39.1.85
+      - RABBITMQ_HOST=10.39.1.85
+      - DB_IMAGES_COMMAND_HOST=10.39.1.130
     networks:
       - ntw_backend
   images-query-services:
@@ -24,6 +30,12 @@ services:
     restart: always
     ports:
       - 8084:8084
+    environment:  
+      - CONFIG_SERVER=http://10.39.1.85:9090
+      - EUREKA_SERVER=http://10.39.1.85:9091/eureka
+      - EUREKA_HOST=10.39.1.85
+      - RABBITMQ_HOST=10.39.1.85      
+      - DB_IMAGES_COMMAND_HOST=10.39.1.130
     networks:
       - ntw_backend
 networks:
