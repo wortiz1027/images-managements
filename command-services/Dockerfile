@@ -25,6 +25,7 @@ ARG BUILD_VERSION
 ARG BUILD_REVISION
 
 ENV APP_HOME="/app" \
+    UPLOAD_DIR="/tmp/upload" \
 	HTTP_PORT=8083
 
 # Informacion de la persona que mantiene la imagen
@@ -41,7 +42,7 @@ LABEL org.opencontainers.image.created=$BUILD_DATE \
 	  org.opencontainers.image.description="El siguiente servicio gestionar toda la informacion y el detalle de las imagenes registradas y asociadas a productos y campanias"
 
 # Creando directorios de la aplicacion y de carga temporal de los archivos
-RUN mkdir $APP_HOME
+RUN mkdir $APP_HOME $UPLOAD_DIR
 
 # Puerto de exposicion del servicio
 EXPOSE $HTTP_PORT

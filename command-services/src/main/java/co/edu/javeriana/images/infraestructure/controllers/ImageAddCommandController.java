@@ -53,7 +53,7 @@ public class ImageAddCommandController {
         image.setImageType(data.getMetadata().getType());
         image.setImageSize(data.getMetadata().getSize());
         //image.setImageUrl(String.format(urlTemplate, InetAddress.getLocalHost().getHostName(), String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
-        image.setImageUrl(String.format(urlTemplate, imageHost, String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
+        image.setImageUrl(String.format(urlTemplate, imageHost, String.format("%s_%s.%s", data.getMetadata().getId(), name.replace(" ", "_"), data.getMetadata().getType()))); // http://%s:%s/images/resources/load/%s
 
         CompletableFuture<Response> rs = service.createImage(image, data.getImage());
 
