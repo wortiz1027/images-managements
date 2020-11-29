@@ -30,6 +30,9 @@ public class ImageAddCommandController {
     @Value("${images.resources.url}")
     private String urlTemplate;
 
+    @Value("${images.resources.host}")
+    private String imageHost;
+
     private final ImagesCommandService service;
 
     @ApiOperation(value = "Creacion de imagenes en el sistema", response = Response.class)
@@ -49,7 +52,8 @@ public class ImageAddCommandController {
         image.setImageName(String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")));
         image.setImageType(data.getMetadata().getType());
         image.setImageSize(data.getMetadata().getSize());
-        image.setImageUrl(String.format(urlTemplate, InetAddress.getLocalHost().getHostName(), String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
+        //image.setImageUrl(String.format(urlTemplate, InetAddress.getLocalHost().getHostName(), String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
+        image.setImageUrl(String.format(urlTemplate, imageHost, String.format("%s_%s", data.getMetadata().getId(), name.replace(" ", "_")))); // http://%s:%s/images/resources/load/%s
 
         CompletableFuture<Response> rs = service.createImage(image, data.getImage());
 
