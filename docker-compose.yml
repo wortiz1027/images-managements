@@ -15,6 +15,7 @@ services:
     restart: always
     ports:
       - 8083:8083
+      - 6083:6083
     environment:  
       - CONFIG_SERVER=http://10.39.1.85:9090
       - EUREKA_SERVER=http://10.39.1.85:9091/eureka
@@ -31,6 +32,7 @@ services:
     restart: always
     ports:
       - 8084:8084
+      - 6084:6084
     environment:  
       - CONFIG_SERVER=http://10.39.1.85:9090
       - EUREKA_SERVER=http://10.39.1.85:9091/eureka
